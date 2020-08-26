@@ -24,7 +24,7 @@ You are responsible for the cost of the AWS services you use when running this s
 
 1. Log in to the AWS Management Console and click the button below to start the AWS CloudFormation template.
 
- [![Launch Stack](assets/launch-stack.png)](https://cn-northwest-1.console.amazonaws.cn/cloudformation/home?region=cn-northwest-1#/stacks/create/template?stackName=SpotTagBot&templateurl=https:%2f%2faws-solutions-reference.s3.cn-north-1.amazonaws.com.cn%2fspot-tag-bot%2flatest%2f00-Master.template)
+ [![Launch Stack](assets/launch-stack.png)](https://cn-northwest-1.console.amazonaws.cn/cloudformation/home?region=cn-northwest-1#/stacks/create/template?stackName=spot-bot&templateURL=https:%2F%2Faws-solutions-reference.s3.cn-north-1.amazonaws.com.cn%2Fspot-bot%2Fv1.0.0%2Fspot-bot-china.template)
  
 2. By default, the template is launched in the AWS Ningxia region. To launch the solution in another AWS region, use the zone selector in the console navigation bar.
 
