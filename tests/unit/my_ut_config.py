@@ -1,0 +1,78 @@
+import os
+from typing import Union
+
+
+def create_env():
+    """
+    TODO unset the env variables.
+    Never commit this file.
+
+    Usually the environment variable will be provided by CloudFormation in provision stage. Here for UT we define
+    them here for our own.
+    """
+    os.environ["ES_URL"] = str(get_config("es_url"))
+    os.environ["SAGEMAKER_ROLE"] = get_config("sagemaker_role")
+    os.environ["SPOT_FLEET_ROLE"] = get_config("spot_fleet_role")
+    os.environ["BATCH_INSTANCE_ROLE"] = get_config("batch_instance_role")
+    os.environ["BATCH_SUBNETS"] = get_config("batch_subnets")
+    os.environ["BATCH_COMPUTE_ENV_SG"] = get_config("batch_compute_env_sg")
+    os.environ["BATCH_COMPUTE_TYPE"] = get_config("batch_compute_type")
+    os.environ["BATCH_SERVICE_ROLE"] = get_config("batch_service_role")
+    os.environ["BATCH_BOT_VCPU"] = str(get_config("batch_bot_vCPU"))
+    os.environ["SF_ROLE_ARN"] = get_config("sf_role_arn")
+    os.environ["BATCH_EC2_VCPU_MIN"] = get_config("batch_EC2_vCPU_MIN")
+    os.environ["BATCH_EC2_VCPU_MAX"] = get_config("batch_EC2_vCPU_MAX")
+    # For man function to switch.
+    os.environ["BOT_UT"] = "T"
+
+    print("""
+    >>> Environment variables for UT are created.
+        BATCH_BOT_VCPU={}
+        SF_ROLE_ARN={}
+        BATCH_SERVICE_ROLE={}
+        BATCH_COMPUTE_TYPE={}
+        BATCH_COMPUTE_ENV_SG={}
+        BATCH_SUBNETS={}
+        BATCH_INSTANCE_ROLE={}
+        SPOT_FLEET_ROLE={}
+        SAGEMAKER_ROLE={}
+        ES_URL={}
+        BOT_UT={}
+        BATCH_EC2_VCPU_MIN={}
+        BATCH_EC2_VCPU_MAX={}
+        """.format(os.environ["BATCH_BOT_VCPU"],
+                   os.environ["SF_ROLE_ARN"],
+                   os.environ["BATCH_SERVICE_ROLE"],
+                   os.environ["BATCH_COMPUTE_TYPE"],
+                   os.environ["BATCH_COMPUTE_ENV_SG"],
+                   os.environ["BATCH_SUBNETS"],
+                   os.environ["BATCH_INSTANCE_ROLE"],
+                   os.environ["SPOT_FLEET_ROLE"],
+                   os.environ["SAGEMAKER_ROLE"],
+                   os.environ["ES_URL"],
+                   os.environ["BOT_UT"],
+                   os.environ["BATCH_EC2_VCPU_MIN"],
+                   os.environ["BATCH_EC2_VCPU_MAX"]
+                   ))
+
+
+def get_config(key) -> Union[str, int, None]:
+    _config = {
+        'es_url': "http://52.83.46.146:8088/",
+        'sf_role_arn': 'arn:aws:iam::847380964353:role/StepFunctionsWorkflowExecutionRole',
+        # AWS Batch
+        'batch_compute_type': 'SPOT',  # can be SPOT or EC2
+        'batch_bot_vCPU': 2,
+        'batch_bot_mem': 1024,
+        'batch_service_role': 'arn:aws:iam::847380964353:role/AWSBatchServiceRole',
+        'batch_EC2_vCPU_MIN': '8',
+        'batch_EC2_vCPU_MAX': '128',
+        'batch_subnets': 'subnet-0000cf0e',
+        'batch_compute_env_sg': 'sg-a0bf10f6',
+        # https://docs.aws.amazon.com/batch/latest/userguide/instance_IAM_role.html
+        # Please double check it is instance arn
+        'batch_instance_role': 'arn:aws:iam::847380964353:instance-profile/ecsInstanceRole',
+        'spot_fleet_role': 'arn:aws:iam::847380964353:role/aws-service-role/spot.amazonaws.com/AWSServiceRoleForEC2SpotFleet',
+        'sagemaker_role': 'arn:aws:iam::847380964353:role/service-role/AmazonSageMaker-ExecutionRole-20200409T140000'
+    }
+    return _config.get(key)

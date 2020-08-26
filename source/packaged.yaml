@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'spot-bot-execution-planner
+
+  Generate the batch job and control execution.
+
+  '
+Globals:
+  Function:
+    Timeout: 900
+Resources:
+  SpotBotApiReceiverFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://spotbot.cf.code/022ed5c57ee3805f7138f0b10749bf9c
+      Handler: sam_spot_bot_api_receiver.app.lambda_handler
+      Runtime: python3.7
+      FunctionName: sam_spot_bot_api_receiver
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /create/{any_argument+}
+            Method: any
+      Environment:
+        Variables:
+          PARAM1: VALUE
+  SpotBotApiReceiverFunctionAdditionalPermission:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: spot_bot_api
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - logs:*
+          - lambda:*
+          - cloudwatch:*
+          Resource: '*'
+      Roles:
+      - Ref: SpotBotApiReceiverFunctionRole
+  SpotBotCreateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://spotbot.cf.code/f5e2c00f361435abe67cb8c65050666a
+      Handler: sam_spot_bot_create_job.app.lambda_handler
+      Runtime: python3.7
+      FunctionName: sam_spot_bot_create_job
+      Environment:
+        Variables:
+          PARAM1: VALUE
+  SpotBotCreateFunctionAdditionalPermission:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: spot_bot_execution
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - s3:*
+          - logs:*
+          - es:*
+          - lambda:*
+          - ecs:*
+          - ec2:*
+          - cloudwatch:*
+          - batch:*
+          - iam:List*
+          - iam:PassRole
+          - states:*
+          - sagemaker:*
+          Resource: '*'
+      Roles:
+      - Ref: SpotBotCreateFunctionRole
+Outputs:
+  SpotBotCreateApigwURL:
+    Description: API Gateway endpoint URL for Prod environment for create_job lambda
+      function.
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create/proxy
+  SpotBotCreateFunction:
+    Description: SpotBot Processing ARN
+    Value:
+      Fn::GetAtt:
+      - SpotBotCreateFunction
+      - Arn
+  SpotBotApiReceiverFunction:
+    Description: SpotBot API receiver ARN
+    Value:
+      Fn::GetAtt:
+      - SpotBotApiReceiverFunction
+      - Arn

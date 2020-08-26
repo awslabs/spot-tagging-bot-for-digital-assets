@@ -1,0 +1,100 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    spot-bot-execution-planner
+
+    Generate the batch job and control execution.
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+    Function:
+        Timeout: 900
+
+
+Resources:
+
+    SpotBotApiReceiverFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: sam_spot_bot_api_receiver/build/
+            Handler: sam_spot_bot_api_receiver.app.lambda_handler
+            Runtime: python3.7 # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+            FunctionName: sam_spot_bot_api_receiver
+            Events:
+                CatchAll:
+                    Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                    Properties:
+                        Path: /create/{any_argument+}
+                        Method: any
+            Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+                Variables:
+                    PARAM1: VALUE
+
+    # Sample policy to add additional permissions to your Lambda
+    SpotBotApiReceiverFunctionAdditionalPermission:
+        Type: "AWS::IAM::Policy"
+        Properties:
+            PolicyName: "spot_bot_api"
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    - Effect: "Allow"
+                      Action:
+                          - logs:*
+                          - lambda:*
+                          - cloudwatch:*
+                      Resource: "*"
+            Roles:
+                - !Ref SpotBotApiReceiverFunctionRole # Sample policy to demonstrate Implicit IAM Role created with SAM
+
+
+    SpotBotCreateFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: sam_spot_bot_create_job/build/
+            Handler: sam_spot_bot_create_job.app.lambda_handler
+            Runtime: python3.7 # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+            FunctionName: sam_spot_bot_create_job
+            Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+                Variables:
+                    PARAM1: VALUE
+
+    SpotBotCreateFunctionAdditionalPermission:
+        Type: "AWS::IAM::Policy"
+        Properties:
+            PolicyName: "spot_bot_execution"
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    - Effect: "Allow"
+                      Action:
+                          - s3:*
+                          - logs:*
+                          - es:*
+                          - lambda:*
+                          - ecs:*
+                          - ec2:*
+                          - cloudwatch:*
+                          - batch:*
+                          - iam:List*
+                          - iam:PassRole
+                          - states:*
+                          - sagemaker:*
+                      Resource: "*"
+            Roles:
+                - !Ref SpotBotCreateFunctionRole # Sample policy to demonstrate Implicit IAM Role created with SAM
+
+Outputs:
+
+    SpotBotCreateApigwURL:
+      Description: "API Gateway endpoint URL for Prod environment for create_job lambda function."
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create/proxy"
+
+    SpotBotCreateFunction:
+      Description: "SpotBot Processing ARN"
+      Value: !GetAtt SpotBotCreateFunction.Arn
+
+    SpotBotApiReceiverFunction:
+        Description: "SpotBot API receiver ARN"
+        Value: !GetAtt SpotBotApiReceiverFunction.Arn
+

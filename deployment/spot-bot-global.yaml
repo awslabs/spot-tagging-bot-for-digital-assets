@@ -1,0 +1,772 @@
+# TODO spot fleet role is not right.
+# TODO ecsInstance role is not right.
+AWSTemplateFormatVersion: 2010-09-09
+Description: (spot bot) - The AWS CloudFormation template for deployment of the  spotbot. Version v1.0.0
+
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+            default: VPC Setting
+        Parameters:
+          - CustomIdentifier
+          - AvailabilityZones
+          - VPCCIDR
+          - PublicSubnet1CIDR
+          - PublicSubnet2CIDR
+          - PrivateSubnet1CIDR
+          - PrivateSubnet2CIDR
+
+      - Label:
+            default: Elastic Search Setting
+        Parameters:
+          - ElasticSearchDomainName
+          - ClientIp
+          - ElasticSearchVersion
+          - ElasticSearchInstanceType
+      
+      - Label:
+          default: Batch Setting
+        Parameters:
+          - BatchComputerType
+
+Parameters:
+    CustomIdentifier:
+      Description: AWS Resource CustomIdentifier
+      Type: String
+      Default: SpotBot
+    AvailabilityZones:
+      Description: >-
+        The list of Availability Zones to use for the subnets in the VPC. Please select two AvailabilityZones.
+      Type: 'List<AWS::EC2::AvailabilityZone::Name>'
+
+    VPCCIDR:
+      Type: String
+      Default: 10.0.0.0/16
+      AllowedPattern: >-
+        ^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]){1}(\/([0-9]|[1-2][0-9]|3[0-2]))?$
+      ConstraintDescription: must be a valid CIDR block format.
+      Description: The CIDR block for the VPC.
+
+    PublicSubnet1CIDR:
+      Type: String
+      Default: 10.0.0.0/24
+      AllowedPattern: >-
+        ^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]){1}(\/([0-9]|[1-2][0-9]|3[0-2]))?$
+      ConstraintDescription: must be a valid CIDR block format.
+      Description: The CIDR block for the public subnet located in Availability Zone A.
+
+    PublicSubnet2CIDR:
+      Type: String
+      Default: 10.0.1.0/24
+      AllowedPattern: >-
+        ^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]){1}(\/([0-9]|[1-2][0-9]|3[0-2]))?$
+      ConstraintDescription: must be a valid CIDR block format.
+      Description: The CIDR block for the public  subnet located in Availability Zone B.
+
+    PrivateSubnet1CIDR:
+      Type: String
+      Default: 10.0.2.0/24
+      AllowedPattern: >-
+        ^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]){1}(\/([0-9]|[1-2][0-9]|3[0-2]))?$
+      ConstraintDescription: must be a valid CIDR block format.
+      Description: The CIDR block for the private  subnet located in Availability Zone 1.
+
+    PrivateSubnet2CIDR:
+      Type: String
+      Default: 10.0.3.0/24
+      AllowedPattern: >-
+        ^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]){1}(\/([0-9]|[1-2][0-9]|3[0-2]))?$
+      ConstraintDescription: must be a valid CIDR block format.
+      Description: The CIDR block for the private  subnet located in Availability Zone 2.
+
+    ElasticSearchDomainName:
+        Type: String
+        Description: "Domain Name "
+        Default: 'spot-bot'
+    ClientIp:
+        Type: String
+        Description: "Client IP Address "
+        Default: '0.0.0.0/0'
+    BatchComputerType:
+        Type: String
+        Description: "BatchComputerType "
+        Default: 'SPOT'
+    ElasticSearchInstanceType:
+        Type: String
+        Description: "ElasticSearchInstanceType "
+        Default: 'm5.large.elasticsearch'     
+    ElasticSearchVersion:
+        Type: String
+        AllowedValues: ['5.6', '5.5', '5.3', '5.1', '6.8', '6.7', '6.5', '6.4', '6.3', '6.2', '6.0', '7.4', '7.1']
+        Default: 7.4
+        Description: The version of Elasticsearch to use.
+
+Mappings:
+    SourceCode:
+        General:
+            S3Bucket: "%%BUCKET_NAME%%"
+            KeyPrefix: "%%SOLUTION_NAME%%/%%VERSION%%" 
+
+Resources:
+  SpotBotVPC:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      Parameters:
+        AvailabilityZones: !Join 
+          - ','
+          - !Ref AvailabilityZones
+        VPCCIDR: !Ref VPCCIDR
+        PublicSubnet1CIDR: !Ref PublicSubnet1CIDR
+        PublicSubnet2CIDR: !Ref PublicSubnet2CIDR
+        PrivateSubnet1CIDR: !Ref PrivateSubnet1CIDR
+        PrivateSubnet2CIDR: !Ref PrivateSubnet2CIDR
+        CustomIdentifier: !Ref CustomIdentifier
+      TemplateURL: https://%%BUCKET_NAME%%-reference.s3-us-west-2.amazonaws.com/%%SOLUTION_NAME%%/%%VERSION%%/spot-bot-vpc-global.template
+      TimeoutInMinutes: '10'
+
+  ElasticSearchServiceRole:
+    Type: 'AWS::IAM::ServiceLinkedRole'
+    Properties:
+      AWSServiceName: es.amazonaws.com 
+      Description: 'SpotBot ElasticSearch.'
+  BatchSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W36
+            reason: "Security group rules without a description"
+          - id: F1000
+            reason: "Missing egress rule means all traffic is allowed outbound"
+          - id: W2
+            reason: "Security Groups found with cidr open to world on ingress."
+          - id: W9
+            reason: "Security Groups found with ingress cidr that is not /32"
+    Properties:
+      GroupDescription: Security group for spotbot
+      VpcId: !GetAtt 
+        - SpotBotVPC
+        - Outputs.VPC
+      SecurityGroupIngress:
+        -
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+        - 
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+        - 
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+  ElasticSearchSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W36
+            reason: "Security group rules without a description"
+          - id: F1000
+            reason: "Missing egress rule means all traffic is allowed outbound"
+          - id: W2
+            reason: "Security Groups found with cidr open to world on ingress."
+          - id: W9
+            reason: "Security Groups found with ingress cidr that is not /32"
+    Properties:
+      GroupDescription: Security group for ElasticSearch 
+      VpcId: !GetAtt 
+          - SpotBotVPC
+          - Outputs.VPC
+      SecurityGroupIngress:
+        - 
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+        - 
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+  LambdaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W36
+            reason: "Security group rules without a description"
+          - id: F1000
+            reason: "Missing egress rule means all traffic is allowed outbound"
+          - id: W2
+            reason: "Security Groups found with cidr open to world on ingress."
+          - id: W9
+            reason: "Security Groups found with ingress cidr that is not /32"
+    Properties:
+      GroupDescription: Security group for ElasticSearch 
+
+      VpcId: !GetAtt 
+          - SpotBotVPC
+          - Outputs.VPC
+      SecurityGroupIngress:
+        - 
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+        - 
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+
+      
+  ElasticsearchDomain:
+    DependsOn: SpotBotApiReceiverFunction
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W28
+            reason: "Domain Name is required if we want to restrict AccessPolicies to this resource only"
+    Type: AWS::Elasticsearch::Domain
+    Properties:
+      DomainName: !Ref ElasticSearchDomainName
+      ElasticsearchVersion: !Ref ElasticSearchVersion
+      EncryptionAtRestOptions:
+         Enabled: True
+      EBSOptions:
+        VolumeSize: 10
+        VolumeType: gp2
+        EBSEnabled: true
+      ElasticsearchClusterConfig:
+        InstanceCount: 1
+        InstanceType: !Ref ElasticSearchInstanceType
+        # ZoneAwarenessEnabled: 'true'
+        # DedicatedMasterEnabled: 'true'
+        # DedicatedMasterType: c4.large.elasticsearch
+        # DedicatedMasterCount: '3'
+      SnapshotOptions:
+        AutomatedSnapshotStartHour: '0'
+      AccessPolicies:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow 
+            Principal:
+              AWS: '*'
+            Action: 'es:ESHttp*'
+            #Condition:
+              # IpAddress:
+              #   aws:SourceIp:
+              #     - !Ref ClientIp
+            Resource: !Sub 'arn:${AWS::Partition}:es:${AWS::Region}:${AWS::AccountId}:domain/${ElasticSearchDomainName}/*'
+      AdvancedOptions:
+        rest.action.multi.allow_explicit_index: 'true'
+      VPCOptions:
+        SubnetIds:
+          - !GetAtt
+            - SpotBotVPC
+            - Outputs.PublicSubnet1
+        SecurityGroupIds:
+          - !Ref ElasticSearchSecurityGroup
+        
+
+  SpotBotApiReceiverFunction:
+    Type: 'AWS::Lambda::Function'
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W58
+            reason: "Lambda functions require permission to write CloudWatch Logs"
+    Properties:
+      Code:
+        S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
+        S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "sam_spot_bot_api_receiver.zip"]]
+      FunctionName: sam_spot_bot_api_receiver
+      Tags:
+        - Value: Name
+          Key: 'SpotBotApiReceiver'
+      Handler: sam_spot_bot_api_receiver.app.lambda_handler
+      Role: !GetAtt 
+        - SpotBotApiReceiverFunctionRole
+        - Arn
+      Timeout: 900
+      Runtime: python3.7
+      VpcConfig:
+        # SubnetIds:
+        #   - !Ref PrivateSubnetA
+        SubnetIds: 
+          - !GetAtt 
+            - SpotBotVPC
+            - Outputs.PrivateSubnet1
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+
+  SpotBotApiReceiverFunctionCatchAllPermissionProd:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+      FunctionName: !Ref SpotBotApiReceiverFunction
+      SourceArn: !Sub 
+        - >-
+          arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/*/create/{any_argument+}
+        - __Stage__: '*'
+          __ApiId__: !Ref ServerlessRestApi
+  SpotBotApiReceiverFunctionAdditionalPermission:
+    Type: 'AWS::IAM::Policy'
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: F4
+            reason: "IAM policy should not allow * action."
+          - id: W12
+            reason: "IAM policy should not allow * resource."
+    Properties:
+      PolicyName: spot_bot_api
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 'logs:*'
+              - 'lambda:*'
+              - 'cloudwatch:*'
+            Resource: '*'
+            Effect: Allow
+      Roles:
+        - !Ref SpotBotApiReceiverFunctionRole
+
+  SpotBotCreateFunctionRole:
+    Type: 'AWS::IAM::Role'
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W44
+            reason: "IAM role should not have Elevated Managed policy"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - sagemaker.amazonaws.com
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - 'arn:aws:iam::aws:policy/AWSLambdaFullAccess'
+        - 'arn:aws:iam::aws:policy/PowerUserAccess'
+
+
+  ServerlessRestApiProdStage:
+    Type: 'AWS::ApiGateway::Stage'
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W69
+            reason: "AWS::ApiGateway::Stage should have the AccessLogSetting property defined."
+          - id: W64
+            reason: "AWS::ApiGateway::Stage resources should be associated with an AWS::ApiGateway::UsagePlan."
+    Properties:
+      DeploymentId: !Ref ServerlessRestApiDeployment
+      RestApiId: !Ref ServerlessRestApi
+      StageName: Prod
+  ServerlessRestApiDeployment:
+    Type: 'AWS::ApiGateway::Deployment'
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W68
+            reason: "AWS::ApiGateway::Deployment resources should be associated with an AWS::ApiGateway::UsagePlan."
+    Properties:
+      RestApiId: !Ref ServerlessRestApi
+      Description: 'SpotBot API Gateway'
+      StageName: Stage
+  SpotBotApiReceiverFunctionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+        
+
+  SpotBotCreateFunctionAdditionalPermission:
+    Type: 'AWS::IAM::Policy'
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: F39
+            reason: "IAM policy should not allow * resource with PassRole action"
+          - id: F4
+            reason: "IAM policy should not allow * action"
+          - id: W12
+            reason: "IAM policy should not allow * resource"
+    Properties:
+      PolicyName: spot_bot_execution
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 's3:*'
+              - 'logs:*'
+              - 'es:*'
+              - 'lambda:*'
+              - 'ecs:*'
+              - 'ec2:*'
+              - 'cloudwatch:*'
+              - 'batch:*'
+              - 'iam:List*'
+              - 'iam:PassRole'
+              - 'states:*'
+              - 'sagemaker:*'
+            Resource: '*'
+            Effect: Allow
+      Roles:
+        - !Ref SpotBotCreateFunctionRole
+
+  ServerlessRestApi:
+    Type: 'AWS::ApiGateway::RestApi'
+    Properties:
+      Body:
+        info:
+          version: '1.0'
+          title: !Ref 'AWS::StackName'
+        paths:
+          '/create/{any_argument+}':
+            x-amazon-apigateway-any-method:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub >-
+                  arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SpotBotApiReceiverFunction.Arn}/invocations
+              responses: {}
+        swagger: '2.0'
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Parameters:
+        endpointConfigurationTypes: REGIONAL
+
+  SpotBotCreateFunction:
+    Type: 'AWS::Lambda::Function'
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W58
+            reason: "Lambda functions require permission to write CloudWatch Logs"
+    DependsOn: ElasticsearchDomain
+    Properties:
+      Code:
+        S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
+        S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "sam_spot_bot_create_job.zip"]]
+      FunctionName: sam_spot_bot_create_job
+      Tags:
+        - Value: Name
+          Key: 'SpotBot Create Job Function'
+      Handler: sam_spot_bot_create_job.app.lambda_handler
+      Role: !GetAtt 
+        - SpotBotCreateFunctionRole
+        - Arn
+      Timeout: 900
+      Runtime: python3.7
+      VpcConfig: 
+        SubnetIds: 
+          - !GetAtt 
+            - SpotBotVPC
+            - Outputs.PrivateSubnet1
+          - !GetAtt 
+            - SpotBotVPC
+            - Outputs.PrivateSubnet2
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+      Environment:
+          Variables:
+            SAGEMAKER_ROLE: !GetAtt SpotSageMakerExecutionRole.Arn
+            SF_ROLE_ARN: !GetAtt StatesExecutionRole.Arn
+            BATCH_SERVICE_ROLE: !GetAtt  BatchServiceRole.Arn
+            BATCH_COMPUTE_TYPE: !Ref BatchComputerType
+            BATCH_COMPUTE_ENV_SG: !Ref BatchSecurityGroup
+            BATCH_SUBNETS: !Join [ ",", [ !GetAtt SpotBotVPC.Outputs.PrivateSubnet1, !GetAtt SpotBotVPC.Outputs.PrivateSubnet2]]
+            BATCH_INSTANCE_ROLE: !GetAtt  BatchInstanceProfile.Arn
+            SPOT_FLEET_ROLE: !GetAtt  SpotFleetRole.Arn
+            ES_URL: !GetAtt  ElasticsearchDomain.DomainEndpoint
+        
+  SpotSageMakerExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "sagemaker.amazonaws.com" 
+            Action: "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonSageMakerFullAccess'
+        - 'arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess'
+      Policies:
+        - PolicyName: SpotSageMakerExecutionPolicy 
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:GetObject"
+                  - "s3:PutObject"
+                  - "s3:DeleteObject"
+                  - "s3:ListBucket"
+                Resource: "arn:aws:s3:::*"
+                
+  #StatesExecutionRole is for step function
+  BatchServiceRole:
+    Type: 'AWS::IAM::Role'
+    #DependsOn: ElasticSearchServiceRole
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: batch.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole'
+
+  BatchInstanceRole:
+    Type: 'AWS::IAM::Role'
+    #DependsOn: ElasticSearchServiceRole
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role'
+        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+        - 'arn:aws:iam::aws:policy/AmazonSageMakerFullAccess'
+
+  BatchInstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Roles:
+        - !Ref BatchInstanceRole
+
+  SpotFleetRole:
+    Type: 'AWS::IAM::Role'
+    #DependsOn: ElasticSearchServiceRole
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - spotfleet.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole'
+        
+  StatesExecutionRole:
+    Type: "AWS::IAM::Role"
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W11
+            reason: "IAM role should not allow * resource on its permissions policy"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - !Sub states.${AWS::Region}.amazonaws.com
+            Action: "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: StatesExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "lambda:InvokeFunction"
+                  - "batch:SubmitJob" 
+                  - "batch:DescribeJobs"
+                  - "batch:TerminateJob"
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "events:PutRule"
+                  - "events:DescribeRule"
+                  - "events:PutTargets"
+                Resource: 
+                  - "arn:aws:events:*:*:rule/StepFunctionsGetEventsForECSTaskRule"
+                  - "arn:aws:events:*:*:rule/StepFunctionsGetEventsForBatchJobsRule"
+              - Effect: Allow
+                Action:
+                  - "states:ListStateMachines"
+                  - "states:CreateActivity"
+                  - "states:CreateStateMachine"
+                  - "states:ListActivities"
+                Resource: "arn:aws:states:*:*:*"
+  
+  BatchServiceRole:
+    Type: "AWS::IAM::Role"
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: F38
+            reason: "IAM role should not allow * resource with PassRole action on its permissions policy"
+          - id: W11
+            reason: "IAM role should not allow * resource on its permissions policy"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "batch.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: StatesExecutionPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'ec2:DescribeAccountAttributes'
+                  - 'ec2:DescribeInstances'
+                  - 'ec2:DescribeInstanceAttribute'
+                  - 'ec2:DescribeSubnets'
+                  - 'ec2:DescribeSecurityGroups'
+                  - 'ec2:DescribeKeyPairs'
+                  - 'ec2:DescribeImages'
+                  - 'ec2:DescribeImageAttribute'
+                  - 'ec2:DescribeSpotInstanceRequests'
+                  - 'ec2:DescribeSpotFleetInstances'
+                  - 'ec2:DescribeSpotFleetRequests'
+                  - 'ec2:DescribeSpotPriceHistory'
+                  - 'ec2:DescribeVpcClassicLink'
+                  - 'ec2:DescribeLaunchTemplateVersions'
+                  - 'ec2:CreateLaunchTemplate'
+                  - 'ec2:DeleteLaunchTemplate'
+                  - 'ec2:RequestSpotFleet'
+                  - 'ec2:CancelSpotFleetRequests'
+                  - 'ec2:ModifySpotFleetRequest'
+                  - 'ec2:TerminateInstances'
+                  - 'ec2:RunInstances'
+                  - 'autoscaling:DescribeAccountLimits'
+                  - 'autoscaling:DescribeAutoScalingGroups'
+                  - 'autoscaling:DescribeLaunchConfigurations'
+                  - 'autoscaling:DescribeAutoScalingInstances'
+                  - 'autoscaling:CreateLaunchConfiguration'
+                  - 'autoscaling:CreateAutoScalingGroup'
+                  - 'autoscaling:UpdateAutoScalingGroup'
+                  - 'autoscaling:SetDesiredCapacity'
+                  - 'autoscaling:DeleteLaunchConfiguration'
+                  - 'autoscaling:DeleteAutoScalingGroup'
+                  - 'autoscaling:CreateOrUpdateTags'
+                  - 'autoscaling:SuspendProcesses'
+                  - 'autoscaling:PutNotificationConfiguration'
+                  - 'autoscaling:TerminateInstanceInAutoScalingGroup'
+                  - 'ecs:DescribeClusters'
+                  - 'ecs:DescribeContainerInstances'
+                  - 'ecs:DescribeTaskDefinition'
+                  - 'ecs:DescribeTasks'
+                  - 'ecs:ListClusters'
+                  - 'ecs:ListContainerInstances'
+                  - 'ecs:ListTaskDefinitionFamilies'
+                  - 'ecs:ListTaskDefinitions'
+                  - 'ecs:ListTasks'
+                  - 'ecs:CreateCluster'
+                  - 'ecs:DeleteCluster'
+                  - 'ecs:RegisterTaskDefinition'
+                  - 'ecs:DeregisterTaskDefinition'
+                  - 'ecs:RunTask'
+                  - 'ecs:StartTask'
+                  - 'ecs:StopTask'
+                  - 'ecs:UpdateContainerAgent'
+                  - 'ecs:DeregisterContainerInstance'
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                  - 'logs:DescribeLogGroups'
+                  - 'iam:GetInstanceProfile'
+                  - 'iam:GetRole'
+                Resource: '*'
+              - Effect: Allow
+                Action: 'iam:PassRole'
+                Resource:
+                  - '*'
+                Condition:
+                  StringEquals:
+                    'iam:PassedToService':
+                      - ec2.amazonaws.com
+                      - ec2.amazonaws.com.cn
+                      - ecs-tasks.amazonaws.com
+              - Effect: Allow
+                Action: 'iam:CreateServiceLinkedRole'
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    'iam:AWSServiceName':
+                      - spot.amazonaws.com
+                      - spotfleet.amazonaws.com
+                      - autoscaling.amazonaws.com
+                      - ecs.amazonaws.com
+              - Effect: Allow
+                Action:
+                  - 'ec2:CreateTags'
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    'ec2:CreateAction': RunInstances
+
+
+
+Outputs:
+  ESDomainArn:
+    Value: !GetAtt ElasticsearchDomain.DomainArn
+  ESDomainEndpoint:
+    Value: !GetAtt ElasticsearchDomain.DomainEndpoint
+  ESDashboard:
+    Value: !Join [ "", [ "https://", !GetAtt ElasticsearchDomain.DomainEndpoint]]
+  SpotBotApiReceiverFunction:
+    Description: SpotBot API receiver ARN
+    Value: !GetAtt 
+      - SpotBotApiReceiverFunction
+      - Arn
+  SpotBotCreateFunction:
+    Description: SpotBot Processing ARN
+    Value: !GetAtt 
+      - SpotBotCreateFunction
+      - Arn
+  SpotBotCreateApigwURL:
+    Description: >-
+      API Gateway endpoint URL for Prod environment for create_job lambda
+      function.
+    Value: !Sub >-
+      https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create/proxy
