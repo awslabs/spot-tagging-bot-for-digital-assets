@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-US" prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
+<html lang="en" class="js csstransforms3d">
+<head>
+  <meta charset="utf-8">
+  <meta property="og:title" content="SpotBot Workshop" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="generator" content="Hugo 0.72.0" />
+  <meta name="description" content="My AWS Workshop">
+<meta name="author" content="Jane Architect">
+
+  <link rel="shortcut icon" href="https://a0.awsstatic.com/libra-css/images/site/fav/favicon.ico" type="image/ico" />
+<link rel="icon" href="https://a0.awsstatic.com/libra-css/images/site/fav/favicon.ico" type="image/ico" />
+
+  <title>OCR 机器人-检查结果 :: SpotBot Workshop</title>
+
+  
+  <link href="../../css/nucleus.css" rel="stylesheet">
+  <link href="../../css/fontawesome-all.min.css" rel="stylesheet">
+  <link href="../../css/hybrid.css" rel="stylesheet">
+  <link href="../../css/featherlight.min.css" rel="stylesheet">
+  <link href="../../css/perfect-scrollbar.min.css" rel="stylesheet">
+  <link href="../../css/auto-complete.css" rel="stylesheet">
+  <link href="../../css/atom-one-dark-reasonable.css" rel="stylesheet">
+  <link href="../../css/theme.css" rel="stylesheet">
+  <link href="../../css/hugo-theme.css" rel="stylesheet">
+  
+  <link href="../../css/theme-aws.css" rel="stylesheet">
+  
+
+  <script src="../../js/jquery-3.3.1.min.js"></script>
+
+  <style>
+    :root #header + #content > #left > #rlblock_left{
+        display:none !important;
+    }
+    
+      :not(pre) > code + span.copy-to-clipboard {
+          display: none;
+      }
+    
+  </style>
+  
+</head>
+
+<body class="" data-url="/05usebot/0501ocrbot/0501010checkresult.html">
+  <nav id="sidebar" class="showVisitedLinks">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <div>
+    <a href="../../" title="Go home">
+        <img style="vertical-align:middle" src="../../images/logo.png" height="70px" />
+    </a>
+</div>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="../../js/lunr.min.js"></script>
+<script type="text/javascript" src="../../js/auto-complete.js"></script>
+<script type="text/javascript">
+    
+        var baseurl = "http:\/\/test.com";
+    
+</script>
+<script type="text/javascript" src="../../js/search.js"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/01introduction.html" title=" 介绍" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../01introduction.html">
+          <b>1. </b> 介绍
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/01introduction/100usecase.html" title="系统用例[Need to update]" class="dd-item ">
+        <a href="../../01introduction/100usecase.html">
+        系统用例[Need to update]
+        <i class="fas fa-check read-icon"></i>
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/01introduction/200whyusespotbot.html" title="为什么使用数字化资产盘活机器人" class="dd-item ">
+        <a href="../../01introduction/200whyusespotbot.html">
+        为什么使用数字化资产盘活机器人
+        <i class="fas fa-check read-icon"></i>
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/01introduction/300botype.html" title="机器人类型" class="dd-item ">
+        <a href="../../01introduction/300botype.html">
+        机器人类型
+        <i class="fas fa-check read-icon"></i>
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/02architect.html" title="系统架构" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../02architect.html">
+          <b>2. </b>系统架构
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/02architect/0201overview.html" title="架构概览" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../02architect/0201overview.html">
+          <b>2.0</b>架构概览
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/02architect/0210component.html" title=" 组件" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../02architect/0210component.html">
+          <b>2.1</b> 组件
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/02architect/0220sequence.html" title="流程图" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../02architect/0220sequence.html">
+          <b>2.2 </b>流程图
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/02architect/0230interaction.html" title="服务交互" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../02architect/0230interaction.html">
+          <b>2.3 </b>服务交互
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/03deployment.html" title="系统部署" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../03deployment.html">
+          <b>3. </b>系统部署
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/03deployment/0301cloudformation.html" title="Cloudformation 部署" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../03deployment/0301cloudformation.html">
+          <b>3.1 </b>Cloudformation 部署
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/03deployment/0302verify.html" title="环境验证" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../03deployment/0302verify.html">
+          <b>3.2 </b>环境验证
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/03deployment/0302verify/100apigateway.html" title="APIGateway" class="dd-item ">
+        <a href="../../03deployment/0302verify/100apigateway.html">
+        APIGateway
+        <i class="fas fa-check read-icon"></i>
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/03deployment/0302verify/200lambda.html" title="Lambda" class="dd-item ">
+        <a href="../../03deployment/0302verify/200lambda.html">
+        Lambda
+        <i class="fas fa-check read-icon"></i>
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/03deployment/0302verify/500elasticsearch.html" title="Elasticsearch" class="dd-item ">
+        <a href="../../03deployment/0302verify/500elasticsearch.html">
+        Elasticsearch
+        <i class="fas fa-check read-icon"></i>
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/04trainmodel.html" title="模型训练" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../04trainmodel.html">
+          <b>4. </b>模型训练
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/04trainmodel/0401ocrbot.html" title="OCR 机器人模型训练" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../04trainmodel/0401ocrbot.html">
+          <b>4.1 </b>OCR 机器人模型训练
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/04trainmodel/0402carbot.html" title=" 车险理赔机器人模型训练" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../04trainmodel/0402carbot.html">
+          <b>4.2 </b> 车险理赔机器人模型训练
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/04trainmodel/0403semanticbot.html" title=" 情感分类机器人模型训练" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../04trainmodel/0403semanticbot.html">
+          <b>4.3 </b> 情感分类机器人模型训练
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/05usebot.html" title="使用机器人" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="../../05usebot.html">
+          <b>5. </b>使用机器人
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/05usebot/0501ocrbot.html" title="OCR 机器人" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="../../05usebot/0501ocrbot.html">
+          <b>5.1 </b>OCR 机器人
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/05usebot/0501ocrbot/050101submitjob.html" title="OCR 机器人-提交任务" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../05usebot/0501ocrbot/050101submitjob.html">
+          <b>5.1.1 </b>OCR 机器人-提交任务
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/05usebot/0501ocrbot/050105checkstepfunction.html" title="OCR 机器人-检查 StepFunction" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../05usebot/0501ocrbot/050105checkstepfunction.html">
+          <b>5.1.2</b>OCR 机器人-检查 StepFunction
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/05usebot/0501ocrbot/0501010checkresult.html" title="OCR 机器人-检查结果" class="dd-item 
+        parent
+        active
+        
+        ">
+      <a href="../../05usebot/0501ocrbot/0501010checkresult.html">
+          <b>5.1.2 </b>OCR 机器人-检查结果
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/05usebot/0502carbot.html" title=" 车险理赔机器人" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../05usebot/0502carbot.html">
+          <b>5.2 </b> 车险理赔机器人
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/05usebot/0503semanticbot.html" title=" 情感分类机器人" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../05usebot/0503semanticbot.html">
+          <b>5.3 </b> 情感分类机器人
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/06cleanup.html" title="资源清理" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../06cleanup.html">
+          <b>6. </b>资源清理
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="prefooter">
+      <hr/>
+      <ul>
+      
+      
+      
+        <li><a class="padding" href="#" data-clear-history-toggle=""><i class="fas fa-history fa-fw"></i> Clear History</a></li>
+      
+      </ul>
+    </section>
+    
+    <section id="footer">
+      <left>
+
+    <h5 class="copyright">&copy; 2019 Amazon Web Services, Inc. or its Affiliates. All rights reserved.<h5>
+
+</left>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+  <section id="body">
+    <div id="overlay"></div>
+    <div class="padding highlightable">
+      
+      <div>
+        <div id="top-bar">
+          
+          
+          
+          
+          <div id="top-github-link">
+            <a class="github-link" title='Edit this page' href="https://code.amazon.com/packages/Aws-workshop-template/blobs/master/--/workshop/content/05usebot/0501ocrbot/0501010checkresult/_index.md"
+              target="blank">
+              <i class="fas fa-code-branch"></i>
+              <span id="top-github-link-text">Edit this page</span>
+            </a>
+          </div>
+          
+          
+          
+          <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+            <span id="sidebar-toggle-span">
+              <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                <i class="fa fa-bars"></i>
+              </a>
+            </span>
+            
+            <span class="links">
+              
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href='http://test.com/'>Steward Workshop</a> > <a href='http://test.com/05usebot.html'>使用机器人</a> > <a href='http://test.com/05usebot/0501ocrbot.html'>OCR 机器人</a> > OCR 机器人-检查结果
+          
+          
+          
+          
+          
+          
+          
+          
+            </span>
+          </div>
+          
+        </div>
+      </div>
+      
+
+      
+      <div id="chapter">
+        
+        <div id="body-inner">
+          <h1>OCR 机器人-检查结果</h1>
+          
+          
+
+
+
+	<h3 id="查看-step-function-状态">查看 Step function 状态</h3>
+<p>进入 <a href="https://console.aws.amazon.com/states/home?region=us-east-1#/statemachines">https://console.aws.amazon.com/states/home?region=us-east-1#/statemachines</a></p>
+<p><img src="2020-07-09-20-51-02.png" alt=""></p>
+<p>点击 spot_bot_controller
+<img src="2020-07-09-20-54-19.png" alt=""></p>
+<p>点击 Exceutions 标签页
+<img src="2020-07-09-21-11-30.png" alt=""></p>
+<p>选择 SENTIMENT_ANALYSIS-2-xxx-xxx-xxx的任务。
+显示 &ldquo;Execution details&rdquo; 页面
+<img src="2020-07-15-11-32-29.png" alt=""></p>
+<p>TODO:
+等待 Step function 能成功的调用 Batch 后继续完善该 workshop。</p>
+
+
+
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+            </div> 
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="../../05usebot/0501ocrbot/050105checkstepfunction.html" title="OCR 机器人-检查 StepFunction"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="../../05usebot/0502carbot.html" title=" 车险理赔机器人" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="../../js/clipboard.min.js"></script>
+    <script src="../../js/perfect-scrollbar.min.js"></script>
+    <script src="../../js/perfect-scrollbar.jquery.min.js"></script>
+    <script src="../../js/jquery.sticky.js"></script>
+    <script src="../../js/featherlight.min.js"></script>
+    <script src="../../js/html5shiv-printshiv.min.js"></script>
+    <script src="../../js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="../../js/modernizr.custom-3.6.0.js"></script>
+    <script src="../../js/learn.js"></script>
+    <script src="../../js/hugo-learn.js"></script>
+
+    <link href="../../mermaid/mermaid.css" rel="stylesheet" />
+    <script src="../../mermaid/mermaid.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+  </body>
+</html>
