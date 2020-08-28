@@ -18,7 +18,7 @@ You can choose to deploy the digital asset disk robot solution directly. Here ar
 
 ## Step 1: Start the CloudFormation stack
 
-This automated AWS CloudFormation template deploys BigBlueButton applications on AWS Cloud.
+This automated AWS CloudFormation template deploys Spot Tag Bot for Digital Assets solution on AWS Cloud.
 
 You are responsible for the cost of the AWS services you use when running this solution. For more details, see the Expenses section. For full details, see the pricing page for each AWS service that will be used in this solution.
 

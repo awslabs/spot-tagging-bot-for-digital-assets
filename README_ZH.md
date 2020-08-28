@@ -23,7 +23,7 @@
 
 ## 步骤1: 启动 CloudFormation 堆栈
 
-此自动化 AWS CloudFormation 模板在 AWS Cloud 上部署 BigBlueButton 应用程序。
+此自动化 AWS CloudFormation 模板在 AWS Cloud 上部署数字资产盘活机器人解决方案。
 
 您负责运行此解决方案时使用的AWS服务的成本。 有关更多详细信息，请参见“费用”部分。 有关完整详细信息，请参阅此解决方案中将使用的每个AWS服务的定价页面。
 
