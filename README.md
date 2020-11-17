@@ -55,4 +55,4 @@ Each robot consists of two layers, one layer of implementation of business requi
 
 **Q: Can I use my own data for secondary training?**
 
-Yes, there is a container-based training framework in the Spot Tag Bot for Digital Assets solution.Users can use AWS Sagemaker or other Notebook hosting services to open training framework software and import their own labeled data for training.After training results users can export into the robotic framework of asset disk live robotics solutions. Spot Tag Bot for Digital Assets solution will use a model after secondary training for reasoning
+Yes, there is a container-based training framework in the Spot Tag Bot for Digital Assets solution.Users can use AWS Sagemaker or other Notebook hosting services to open training framework software and import their own labeled data for training.After training results users can export into the robotic framework of asset disk live robotics solutions. Spot Tag Bot for Digital Assets solution will use a model after secondary training for reasoning.
