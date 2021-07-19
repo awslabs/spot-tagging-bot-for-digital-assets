@@ -1,8 +1,8 @@
-# Spot Tag Bot for Digital Assets
+# Spot Tagging Bot for Digital Assets
 
-[中文版本](./README_ZH.md)
+[中文版本](./README.md)
 
-The Spot Tagging Bot for Digital Assets solution leverage the machine learning models to help customers quickly deploy an automated Digital Asset Inspection System in the AWS (Ningxia) region operated by NWCD and the AWS (Beijing) region operated by Sinnet. Spot Bot support label digital assets( e.g., unstructured data such as photos, PDF documents, videos, etc.) stored inside Amazon S3 at low cost (e.g., unstructured data such as photos, PDF documents, videos, etc.), these knowledge labels will help customers automate business processes and create precise knowledge maps. Robot warehouses built on top of open source datasets can support multiple types of tasks, such as OCR identification of text pictures, text classification of documents, image classification of vehicle models, etc.  Customer can use bots directly and build customised bot by fine-tune your own model.
+Spot Tagging Bot for Digital Assets is an open source solution. This solution includes several digital asset knowledge labeling software robots.With these robots, users can knowingly label digital assets (forms, pictures, PDFs, videos, crawlers and other rich text information) stored in AWS S3.These knowledge labels extract information from inside digital assets into labels that can be further processed.For example, extracting information such as names, addresses, etc., from ID images; extracting conversation captions from video conversations; extracting key instruction words from customer service recordings; extracting spending amounts from form data such as invoices, company topics; what time period people who draw specific roles from videos appear at, etc.Users can use this information to build their own knowledge base and further work on process automation and business forecasting.
 
 - **Applicable regions:** cn-northwest-1 (Ningxia), cn-north-1 (Beijing)
 - **Version:** v1.0
@@ -12,15 +12,15 @@ If you have problems during your deployment, you can contact us at [GitHub Issue
 
 ## Architecture
 
-You can choose to deploy the digital asset disk robot solution directly. Here are the schema of the scheme.
+You can choose to deploy the Spot Tagging Bot solution directly. Here are the architecture diagram.
 
 ![Architect](assets/architect.png)
 
 ## Step 1: Start the CloudFormation stack
 
-This automated AWS CloudFormation template deploys Spot Tag Bot for Digital Assets solution on AWS Cloud.
+The AWS CloudFormation template deploys Spot Tagging Bot for Digital Assets solution on AWS Cloud.
 
-You are responsible for the cost of the AWS services you use when running this solution. For more details, see the Expenses section. For full details, see the pricing page for each AWS service that will be used in this solution.
+You are responsible for the cost of the AWS services when running this solution. For more details, please see the pricing page for each AWS service that will be used in this solution.
 
 1. Log in to the AWS Management Console and click the button below to start the AWS CloudFormation template.
 
@@ -32,7 +32,7 @@ You are responsible for the cost of the AWS services you use when running this s
 
 4. On the **Specify Stack Details** page, assign a name to the solution stack.
 
-5. Under **Parament**, look at the parameters of the template and modify as needed. This solution uses the following defaults.
+5. Under **Parament**, check the parameters of the template and modify as needed.
 
 2. Choose **Next Step**.
 
@@ -46,13 +46,12 @@ You can view the status of the stack in the **Status** column of the AWS CloudFo
 
 ## FAQ
 
-**Q: How does the asset disk robot solution work?**
+**Q: How does the Spot Tagging Bot solution work?**
 
-The Spot Tag Bot for Digital Assets solution includes an AWS CloudFormation template to help you deploy quickly in your AWS account. This template initiates all the resources and permissions settings you need to deploy this solution.
-When the template is deployed, you can specify the S3 path of the data assets you need to live and the robot you need to start. Spot Tag Bot for Digital Assets solution supports many data asset types, including text, video, pictures, etc. Upon launch, the specified robot generates a list of tasks based on the content of the current S3, which contains digital assets to be processed, such as 1,000 videos that need to be labeled. Specific tasks are segmented (Batch), and then multiple instances of robots handle their respective task segments, if there are a total of 10 robots, each clip may include 100 videos. These robot instances are all running on Spot Instance, so they are computationally good value for money. After processing the current task, the robot writes the results to Elastic Search and S3. If an exception occurs to a robot instance, the task is given to another robot instance to redo it. Customers can query the results of a task through Elastic Search and understand the execution status of the entire task.
+The Spot Tagging Bot for Digital Assets solution includes an AWS CloudFormation template to help you deploy quickly in your AWS account. This template initiates all the resources and create permissions you need to deploy this solution.
+When the template is deployed, you can specify the S3 path of the data assets and the robot you need to start. Spot Tagging Bot for Digital Assets solution supports many data asset types, including text, video, pictures, etc. After launch, the specified robot generates a list of tasks based on the content of the current S3, which contains digital assets to be processed, such as 1,000 videos that need to be labeled. Specific tasks are segmented (Batch), and then multiple instances of robots handle their respective task segments, if there are a total of 10 robots, each batch may include 100 videos. These robot instances are all running on Spot Instances to lower the price. After processed current task, the robot writes the results to Elastic Search and S3. If any exception occurs to a robot instance, the task is given to another robot instance to redo it. Customers can query the results of a task through Elastic Search and understand the execution status of the entire task.
 
-Each robot consists of two layers, one layer of implementation of business requirements, such as OCR robots can complete OCR tasks, but specific OCR tasks may require multiple models to collaborate, such as one model that frames the text section out, and the other model is only responsible for identifying the box's good text, which is the second model. layer to provide capability support to the business tier.
 
-**Q: Can I use my own data for secondary training?**
+**Q: Can I use my own data to fine tune?**
 
-Yes, there is a container-based training framework in the Spot Tag Bot for Digital Assets solution. Users can use AWS Sagemaker or other Notebook hosting services to open training framework software and import their own labeled data for training. After training results users can export into the robotic framework of asset disk live robotics solutions. Spot Tag Bot for Digital Assets solution will use a model after secondary training for reasoning.
+Yes, there is a container-based training framework in the Spot Tagging Bot for Digital Assets solution. User can use AWS Sagemaker or other Notebook hosting services to open training framework software and import their own labeled data for training. After training, user can export result into the framework. Spot Tagging Bot for Digital Assets solution will use the fine-tune model for inference.
