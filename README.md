@@ -1,6 +1,6 @@
 # Spot Tagging Bot for Digital Assets
 
-[中文版本](./README.md)
+[中文版本](./README_ZH.md)
 
 Spot Tagging Bot for Digital Assets is an open source solution. This solution includes several digital asset knowledge labeling software robots.With these robots, users can knowingly label digital assets (forms, pictures, PDFs, videos, crawlers and other rich text information) stored in AWS S3.These knowledge labels extract information from inside digital assets into labels that can be further processed.For example, extracting information such as names, addresses, etc., from ID images; extracting conversation captions from video conversations; extracting key instruction words from customer service recordings; extracting spending amounts from form data such as invoices, company topics; what time period people who draw specific roles from videos appear at, etc.Users can use this information to build their own knowledge base and further work on process automation and business forecasting.
 
